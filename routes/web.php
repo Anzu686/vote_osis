@@ -17,6 +17,7 @@ use App\Http\Controllers\LogoutController;
 |
 */
 
+
 Route::get('/', function () {
     return view('welcome');
 })->name('index');
