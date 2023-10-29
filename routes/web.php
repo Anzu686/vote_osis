@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\CommitController;
 use App\Http\Controllers\LogoutController;
 
 /*
@@ -17,27 +18,30 @@ use App\Http\Controllers\LogoutController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('index');
 
 Route::post('/logout', [LogoutController::class, 'logout'])->middleware('auth')->name('logout');
 
-Route::group(['middleware' => ["guest", ]], function () { 
-Route::get('/login', [LoginController::class, 'index'])->middleware('guest')->name('login');
-Route::post('/login', [LoginController::class, 'authenticate']);
+Route::group(['middleware' => ["guest"]], function () { 
+    Route::get('/login', [LoginController::class, 'index'])->name('login');
+    Route::post('/login', [LoginController::class, 'authenticate']);
 })->name("login-group");
 
 
-Route::group(['middleware' => ["auth", "checkstatus" ]], function () {
-   Route::get('/voting', [VoteController::class, 'index']);
-   Route::post('/voting', [VoteController::class, 'store']);
+Route::group(['middleware' => ["auth", "checkstatus", "plainuser", "plainuser2" ]], function () {
+    Route::get('/voting', [VoteController::class, 'index']);
+    Route::post('/voting', [VoteController::class, 'store']);
+    Route::get('/', function () {
+        return view('welcome');
+    })->name('index');
 })->name("main-vote");
 
+Route::get('/success', [VoteController::class, 'success']);
 
-Route::get('/success', [VoteController::class, 'success'])->middleware('auth');
 
 
-Route::get('/admin', [AdminController::class, 'index'])->middleware('checklevel');
+Route::get('/admin', [AdminController::class, 'index'])->middleware('checkadmin');
+
+Route::get('/commit', [CommitController::class, 'index'])->middleware('checkcommit');
+
 
 

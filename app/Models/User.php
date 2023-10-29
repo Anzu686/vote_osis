@@ -25,6 +25,14 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function scopeFilter($query, array $filters){
+        $query->when($filters['name'] ?? false, fn($query, $name) =>
+        $query->where('name', 'like', '%' . $name . '%'));
+
+        $query->when($filters['class'] ?? false, fn($query, $class) =>
+        $query->where('class', 'like', '%' . $class . '%'));
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -48,5 +56,10 @@ class User extends Authenticatable
     public function Candidate(): BelongsTo
     {
        return $this->belongsTo(Candidate::class);
+    }
+
+    public function getClass()
+    {
+
     }
 }
